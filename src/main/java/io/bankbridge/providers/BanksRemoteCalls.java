@@ -9,7 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.bankbridge.model.BankModel;
 import io.bankbridge.services.BankService;
+import lombok.extern.slf4j.Slf4j;
 
+
+@Slf4j
 public class BanksRemoteCalls implements ResourceProvider {
 
     private static Map config;
@@ -36,7 +39,6 @@ public class BanksRemoteCalls implements ResourceProvider {
             String value = entry.getValue();
             result = service.getBankDetailsAsync(value, models, counter);
         }
-        System.out.println("time taken: " + (System.currentTimeMillis() - start));
         while (counter.getValue() != config.size()) {
         }
         return result;
