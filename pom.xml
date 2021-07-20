@@ -83,6 +83,13 @@
 			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.monitorjbl/json-view -->
+		<dependency>
+			<groupId>com.monitorjbl</groupId>
+			<artifactId>json-view</artifactId>
+			<version>0.14</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
