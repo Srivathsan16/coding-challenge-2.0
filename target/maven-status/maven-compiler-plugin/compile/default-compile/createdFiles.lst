@@ -1,0 +1,11 @@
+io\bankbridge\model\SearchParams.class
+io\bankbridge\handler\BanksRemoteCalls$Counter.class
+io\bankbridge\model\BankModelList.class
+io\bankbridge\handler\BanksCacheBased.class
+io\bankbridge\model\RemoteBankModel.class
+io\bankbridge\services\BankService$1.class
+io\bankbridge\Main.class
+io\bankbridge\model\BankModel.class
+io\bankbridge\model\RemoteCallBankDto.class
+io\bankbridge\handler\BanksRemoteCalls.class
+io\bankbridge\services\BankService.class
