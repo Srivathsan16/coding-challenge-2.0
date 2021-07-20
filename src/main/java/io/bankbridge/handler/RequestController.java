@@ -9,6 +9,7 @@ import io.bankbridge.model.SearchParams;
 import io.bankbridge.model.View;
 import io.bankbridge.providers.BanksCacheBased;
 import io.bankbridge.providers.ResourceProvider;
+import lombok.extern.slf4j.Slf4j;
 import spark.Request;
 import spark.Response;
 
@@ -16,6 +17,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+
+@Slf4j
 public class RequestController {
 
     private final io.bankbridge.providers.ResourceProvider resourceProvider;
@@ -53,29 +56,20 @@ public class RequestController {
             return getResultBanks(criteria, page, pageSize, allBanks);
 
         } catch (JsonProcessingException e) {
-            response.status(503);
+            log.error("Error");
+             response.status(503);
             return "Service unavailable";
         }
 
     }
 
-
     //Adds Criteria and Pagination
     private String getResultBanks(SearchParams criteria, int page, int pageSize, List<FinalBankDto> allBanks) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         if (criteria != null) {
-            List<FinalBankDto> result = getPaginated(getFilteredBanks(allBanks, criteria), page, pageSize);
-            //TODO: Remove Finally after testing all scenarios
-            for (FinalBankDto x : result) {
-                System.out.println("Lists : " + x.getId());
-            }
-            return getFinalJsonBasedOnObjectCalls(mapper, result);
+            return getFinalJsonBasedOnObjectCalls(mapper, getPaginated(getFilteredBanks(allBanks, criteria), page, pageSize));
         } else {
-            List<FinalBankDto> result = getPaginated(allBanks, page, pageSize);
-            for (FinalBankDto x : result) {
-                System.out.println("Lists in else:: " + x.getId());
-            }
-            return getFinalJsonBasedOnObjectCalls(mapper, result);
+            return getFinalJsonBasedOnObjectCalls(mapper, getPaginated(allBanks, page, pageSize));
         }
     }
     //Get the final Sting based on from where it is called
