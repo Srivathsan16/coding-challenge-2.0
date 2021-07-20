@@ -18,7 +18,7 @@ public class BankService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final Object EMPTY_OBJECT = new Object();
-    /* Sync Implementation*/
+    /* Sync Implementation, Just to show not part of the solution*/
     public Set<BankModel>  getBankDetails(String key, String value, Map<BankModel, Object> models, int size, BanksRemoteCalls.Counter counter) throws IOException {
         WebTarget client = ClientBuilder.newClient()
                 .target(value);
@@ -33,14 +33,12 @@ public class BankService {
 
     /*Asyn Implementation using InvocationCallback*/
     public Set<BankModel> getBankDetailsAsync( String value, Map<BankModel, Object> models, BanksRemoteCalls.Counter counter) {
-        System.out.println("URL ::: " + value);
         WebTarget client = ClientBuilder.newClient()
                 .target(value);
         client.request().async().get(new InvocationCallback<String>() {
             @SneakyThrows
             @Override
             public void completed(String response) {
-               // String responseString = response.readEntity(String.class);
                 RemoteBankModel model = readModel(response);
                 models.put(new BankModel(model.getBic(), model.getName(), model.getCountryCode(), model.getAuth()), EMPTY_OBJECT);
                 counter.increment();
@@ -52,7 +50,6 @@ public class BankService {
                 throwable.printStackTrace();
             }
         });
-        System.out.println("request returns");
         return models.keySet();
     }
     private RemoteBankModel readModel(String text) throws IOException {
