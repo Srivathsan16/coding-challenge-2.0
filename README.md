@@ -1,5 +1,38 @@
 # Fintech Innovation Coding Test
 
+##Solution: 
+I have added Endpoint as path groups
+Recommed to use Postman for testing
+Request : http://localhost:8080/v1/banks/all
+           http://localhost:8080/v1/banks/all/{page} :  for page
+           http://localhost:8080/v1/banks/all/{page}/{pageSize} : to specify size
+Request Body can have search Params as :
+    {
+        "id": "CUPIDATATSP1XXX",
+        "countryCode" : "GB"
+    } 
+          
+The same applies for remote bank calls, just replace v1 by v2
+Response sample : 
+For local calls from cache:
+```json
+[
+{"id":"PARIATURDEU0XXX","name":"Banco de espiritu
+santo","countryCode":"GB","products":["accounts","payments"]},{"id":"CUPIDATATSP1XXX","name":"Credit
+Sweets","countryCode":"CH","products":["accounts","payments"]},{"id":"DOLORENOR2XXX","name":"Royal Bank Of
+Fun","countryCode":"GB","products":["accounts"]}]
+```
+
+For Remote Calls :
+```json
+[{"id":"CUPIDATATSP1XXX","name":"Credit
+Sweets","countryCode":"CH","auth":"open-id"},{"id":"PARIATURDEU0XXX","name":"Banco de espiritu
+santo","countryCode":"GB","auth":"oauth"},{"id":"DOLORENOR2XXX","name":"Royal Bank of
+Fun","countryCode":"GB","auth":"oauth"}]
+```
+
+#Also provided inline comments as well 
+
 ## Intro:
 We have an API towards application developers, which returns information about all the banks which are available for the application.
 
@@ -28,7 +61,7 @@ There are two version of the API:
 
 ## Challenge:
 1. Add unit tests for both API versions.
-https://gist.github.com/mageddo/465028426734d2e7a15a42b9eae57490
+
 2. API response:
     - v1 should return: name, id, countryCode and product
     - v2 should return: name, id, countryCode and auth
