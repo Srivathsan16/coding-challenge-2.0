@@ -2,11 +2,16 @@ package io.bankbridge.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.gson.Gson;
+import com.monitorjbl.json.JsonView;
+import com.monitorjbl.json.JsonViewSerializer;
 import io.bankbridge.model.BankModel;
 import io.bankbridge.model.RemoteCallBankDto;
 import io.bankbridge.model.SearchParams;
+import io.bankbridge.model.View;
 import io.bankbridge.providers.BanksCacheBased;
+import io.bankbridge.providers.BanksRemoteCalls;
 import io.bankbridge.providers.ResourceProvider;
 import spark.Request;
 import spark.Response;
@@ -14,6 +19,8 @@ import spark.Response;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static com.monitorjbl.json.Match.match;
 
 public class RequestController {
 
@@ -58,19 +65,33 @@ public class RequestController {
     }
 
     private String getResultBanks(SearchParams criteria, int page, int pageSize, List<RemoteCallBankDto> allBanks) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        /*SimpleModule module = new SimpleModule();
+        module.addSerializer(JsonView.class, new JsonViewSerializer());
+        mapper.registerModule(module);*/
+
         if (criteria != null) {
             List<RemoteCallBankDto> getPaginatedResult = getFilteredBanks(allBanks, criteria);
             List<RemoteCallBankDto> result =getPaginated(getPaginatedResult, page, pageSize);
             for (RemoteCallBankDto x : result) {
                 System.out.println("Lists : " + x.getId());
             }
-            return objectMapper.writeValueAsString(result);
+            if(this.resourceProvider.getClass() != BanksCacheBased.class)
+            return  mapper.writerWithView(View.ExtendedPublic.class).writeValueAsString(result);
+            else{
+                return  mapper.writerWithView(View.Internal.class).writeValueAsString(result);
+            }
+            //return objectMapper.writerWithView(BanksCacheBased.class).writeValueAsString(result);
         } else {
             List<RemoteCallBankDto> result = getPaginated(allBanks, page, pageSize);
             for (RemoteCallBankDto x : result) {
                 System.out.println("Lists in else:: " + x.getId());
             }
-            return objectMapper.writeValueAsString(result);
+            if(this.resourceProvider.getClass() != BanksCacheBased.class)
+                return  mapper.writerWithView(View.ExtendedPublic.class).writeValueAsString(result);
+            else{
+                return  mapper.writerWithView(View.Internal.class).writeValueAsString(result);
+            }
         }
     }
 

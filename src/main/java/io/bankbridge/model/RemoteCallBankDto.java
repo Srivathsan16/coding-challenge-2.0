@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.swing.text.View;
 import java.util.ArrayList;
 
 @Data
@@ -19,9 +18,14 @@ import java.util.ArrayList;
 @NoArgsConstructor
 public class RemoteCallBankDto {
 
+    @JsonView(View.Public.class)
     private String id;
+    @JsonView(View.Public.class)
     private String name;
+    @JsonView(View.Public.class)
     private String countryCode;
+    @JsonView(View.ExtendedPublic.class)
     private String auth;
+    @JsonView(View.Internal.class)
     public ArrayList products;
 }

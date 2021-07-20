@@ -18,7 +18,7 @@ public class Main {
 		RequestController localProvider = new RequestController(new BanksCacheBased());
 		RequestController remoteProvider = new RequestController(new BanksRemoteCalls());
 
-		get("/v1/banks/all", localProvider::handle);
+		get("/v1/banks/all/:page/:pageSize", localProvider::handle);
 		get("/v2/banks/all/:page/:pageSize", remoteProvider::handle);
 		//get("/v1/banks/all", (request, response) -> BanksCacheBased.handle(request, response));
 
