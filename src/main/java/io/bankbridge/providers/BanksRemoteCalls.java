@@ -25,9 +25,7 @@ public class BanksRemoteCalls implements ResourceProvider {
     @Override
     public Set<BankModel> getBanks() {
         Map<BankModel, Object> models = new ConcurrentHashMap<>(config.size());
-        Set<BankModel> result = getBanks(config, new Counter(), models);
-        return result;
-
+        return  getBanks(config, new Counter(), models);
     }
 
     private Set<BankModel> getBanks(Map<String, String> config, Counter counter, Map<BankModel, Object> models) {
@@ -36,14 +34,11 @@ public class BanksRemoteCalls implements ResourceProvider {
         for (Map.Entry<String, String> entry : config.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            //Set<BankModel> result =
-            //	service.getBankDetails(key, value, models,config.size());
-            result = service.getBankDetailsAsync(key, value, models, config.size(), counter);
+            result = service.getBankDetailsAsync(value, models, counter);
         }
         System.out.println("time taken: " + (System.currentTimeMillis() - start));
         while (counter.getValue() != config.size()) {
         }
-
         return result;
     }
 

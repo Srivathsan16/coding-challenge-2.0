@@ -32,7 +32,7 @@ public class BankService {
         }
 
     /*Asyn Implementation using InvocationCallback*/
-    public Set<BankModel> getBankDetailsAsync(String key, String value, Map<BankModel, Object> models, int size, BanksRemoteCalls.Counter counter) {
+    public Set<BankModel> getBankDetailsAsync( String value, Map<BankModel, Object> models, BanksRemoteCalls.Counter counter) {
         System.out.println("URL ::: " + value);
         WebTarget client = ClientBuilder.newClient()
                 .target(value);
