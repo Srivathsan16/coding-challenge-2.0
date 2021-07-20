@@ -108,7 +108,7 @@ public class RequestController {
         if(allBanks == null || allBanks.size() < fromIndex){
             return Collections.emptyList();
         }
-        // toIndex exclusive
+        // index "TO" is inclusive
         return allBanks.subList(fromIndex, Math.min(fromIndex + pageSize, allBanks.size()));
     }
 }

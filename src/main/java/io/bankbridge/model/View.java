@@ -7,5 +7,5 @@ public class View {
 
     static class Public { }
     public static class ExtendedPublic extends Public { }
-    public static class Internal extends ExtendedPublic { }
+    public static class Internal extends Public { }
 }
