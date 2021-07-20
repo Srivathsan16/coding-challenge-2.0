@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RemoteCallBankDto {
+public class FinalBankDto {
 
     @JsonView(View.Public.class)
     private String id;

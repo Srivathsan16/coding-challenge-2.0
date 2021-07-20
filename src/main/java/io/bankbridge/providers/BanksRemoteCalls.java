@@ -4,18 +4,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.gson.Gson;
 import io.bankbridge.model.BankModel;
-import io.bankbridge.model.RemoteCallBankDto;
-import io.bankbridge.model.SearchParams;
 import io.bankbridge.services.BankService;
-import spark.Request;
-import spark.Response;
 
 public class BanksRemoteCalls implements ResourceProvider {
 

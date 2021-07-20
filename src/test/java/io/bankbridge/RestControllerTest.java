@@ -4,7 +4,7 @@ package io.bankbridge;
 
 import io.bankbridge.handler.RequestController;
 import io.bankbridge.model.BankModel;
-import io.bankbridge.model.RemoteCallBankDto;
+import io.bankbridge.model.FinalBankDto;
 import io.bankbridge.model.SearchParams;
 import io.bankbridge.providers.BanksCacheBased;
 import io.bankbridge.providers.BanksRemoteCalls;
@@ -12,23 +12,21 @@ import io.bankbridge.providers.ResourceProvider;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 
 public class RestControllerTest {
 
     @Test
     public void test_PaginationForPageSize() throws Exception {
 
-        final List<RemoteCallBankDto> banks = new ArrayList<>(6);
+        final List<FinalBankDto> banks = new ArrayList<>(6);
         for(int i = 0 ; i < 6;i++){
-           banks.add(any(RemoteCallBankDto.class));
+           banks.add(any(FinalBankDto.class));
        }
         RequestController requestController = new RequestController(new BanksRemoteCalls());
         Assert.assertEquals(3, requestController.getPaginated(banks,1,3).size());
@@ -90,7 +88,7 @@ public class RestControllerTest {
         searchParams.setCountryCode("DE");
         RequestController requestController = new RequestController(new BanksRemoteCalls());
         Assert.assertEquals(Arrays.asList("DE","DE"), requestController.getFilteredBanks(getBanksListMock(),searchParams)
-                .stream().map(RemoteCallBankDto::getCountryCode).collect(Collectors.toList()));
+                .stream().map(FinalBankDto::getCountryCode).collect(Collectors.toList()));
 
     }
 
@@ -102,7 +100,7 @@ public class RestControllerTest {
         searchParams.setId("MOLLITSP13XXX");
         RequestController requestController = new RequestController(new BanksRemoteCalls());
         Assert.assertEquals(Arrays.asList("MOLLITSP13XXX","CUPIDATATSP1XXX"), requestController.getFilteredBanks(getBanksListMock(),searchParams)
-                .stream().map(RemoteCallBankDto::getId).collect(Collectors.toList()));
+                .stream().map(FinalBankDto::getId).collect(Collectors.toList()));
 
     }
 
@@ -115,21 +113,21 @@ public class RestControllerTest {
 
     }
 
-    private List<RemoteCallBankDto> getBanksListMock() {
-        List<RemoteCallBankDto> paginatedbanks = new ArrayList<>();
-        RemoteCallBankDto banks = new RemoteCallBankDto();
+    private List<FinalBankDto> getBanksListMock() {
+        List<FinalBankDto> paginatedbanks = new ArrayList<>();
+        FinalBankDto banks = new FinalBankDto();
         banks.setId("NULLASP17XXX");
         banks.setName("Last National Bank");
         banks.setAuth("ssl-certificate");
         banks.setCountryCode("NO");
 
-        RemoteCallBankDto banks1 = new RemoteCallBankDto();
+        FinalBankDto banks1 = new FinalBankDto();
         banks1.setId("MOLLITSP13XXX");
         banks1.setName("Bank Nulla");
         banks1.setAuth("ssl-certificate");
         banks1.setCountryCode("DE");
 
-        RemoteCallBankDto banks2 = new RemoteCallBankDto();
+        FinalBankDto banks2 = new FinalBankDto();
         banks2.setId("CUPIDATATSP1XXX");
         banks2.setName("Credit Sweets");
         banks2.setAuth("oauth");

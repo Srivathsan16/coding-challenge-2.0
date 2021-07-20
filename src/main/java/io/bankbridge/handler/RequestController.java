@@ -2,16 +2,12 @@ package io.bankbridge.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.gson.Gson;
-import com.monitorjbl.json.JsonView;
-import com.monitorjbl.json.JsonViewSerializer;
 import io.bankbridge.model.BankModel;
-import io.bankbridge.model.RemoteCallBankDto;
+import io.bankbridge.model.FinalBankDto;
 import io.bankbridge.model.SearchParams;
 import io.bankbridge.model.View;
 import io.bankbridge.providers.BanksCacheBased;
-import io.bankbridge.providers.BanksRemoteCalls;
 import io.bankbridge.providers.ResourceProvider;
 import spark.Request;
 import spark.Response;
@@ -19,8 +15,6 @@ import spark.Response;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static com.monitorjbl.json.Match.match;
 
 public class RequestController {
 
@@ -39,20 +33,20 @@ public class RequestController {
         int page = Integer.parseInt(request.params(":page"));
         int pageSize = Integer.parseInt(request.params(":pageSize"));
         try {
-            List<RemoteCallBankDto> allBanks = new ArrayList<>();
+            List<FinalBankDto> allBanks = new ArrayList<>();
             //Comment "i" is just to Keep track when doing Pagination
             int i=0;
             for (BankModel b : resourceProvider.getBanks()) {
-                RemoteCallBankDto remoteCallBankDto = new RemoteCallBankDto();
-                remoteCallBankDto.setId(b.getBic());
+                FinalBankDto finalBankDto = new FinalBankDto();
+                finalBankDto.setId(b.getBic());
                 if ((resourceProvider.getClass() != BanksCacheBased.class)) {
-                    remoteCallBankDto.setAuth(b.getAuth());
+                    finalBankDto.setAuth(b.getAuth());
                 } else {
-                    remoteCallBankDto.setProducts(b.getProducts());
+                    finalBankDto.setProducts(b.getProducts());
                 }
-                remoteCallBankDto.setCountryCode(b.getCountryCode());
-                remoteCallBankDto.setName(b.getName());
-                allBanks.add(i,remoteCallBankDto);
+                finalBankDto.setCountryCode(b.getCountryCode());
+                finalBankDto.setName(b.getName());
+                allBanks.add(i, finalBankDto);
                 i++;
             }
             return getResultBanks(criteria, page, pageSize, allBanks);
@@ -64,16 +58,16 @@ public class RequestController {
 
     }
 
-    private String getResultBanks(SearchParams criteria, int page, int pageSize, List<RemoteCallBankDto> allBanks) throws JsonProcessingException {
+    private String getResultBanks(SearchParams criteria, int page, int pageSize, List<FinalBankDto> allBanks) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         /*SimpleModule module = new SimpleModule();
         module.addSerializer(JsonView.class, new JsonViewSerializer());
         mapper.registerModule(module);*/
 
         if (criteria != null) {
-            List<RemoteCallBankDto> getPaginatedResult = getFilteredBanks(allBanks, criteria);
-            List<RemoteCallBankDto> result =getPaginated(getPaginatedResult, page, pageSize);
-            for (RemoteCallBankDto x : result) {
+            List<FinalBankDto> getPaginatedResult = getFilteredBanks(allBanks, criteria);
+            List<FinalBankDto> result =getPaginated(getPaginatedResult, page, pageSize);
+            for (FinalBankDto x : result) {
                 System.out.println("Lists : " + x.getId());
             }
             if(this.resourceProvider.getClass() != BanksCacheBased.class)
@@ -83,8 +77,8 @@ public class RequestController {
             }
             //return objectMapper.writerWithView(BanksCacheBased.class).writeValueAsString(result);
         } else {
-            List<RemoteCallBankDto> result = getPaginated(allBanks, page, pageSize);
-            for (RemoteCallBankDto x : result) {
+            List<FinalBankDto> result = getPaginated(allBanks, page, pageSize);
+            for (FinalBankDto x : result) {
                 System.out.println("Lists in else:: " + x.getId());
             }
             if(this.resourceProvider.getClass() != BanksCacheBased.class)
@@ -95,16 +89,16 @@ public class RequestController {
         }
     }
 
-    public List<RemoteCallBankDto> getFilteredBanks(List<RemoteCallBankDto> allBanks, SearchParams criteria) {
+    public List<FinalBankDto> getFilteredBanks(List<FinalBankDto> allBanks, SearchParams criteria) {
 
-        Predicate<RemoteCallBankDto> idPredicate = d-> (criteria.getId()!=null) && (criteria.getId().equals(d.getId()));
-        Predicate<RemoteCallBankDto> authPredicate = d-> (criteria.getAuth()!=null) && (criteria.getAuth().equals(d.getAuth()));
-        Predicate<RemoteCallBankDto> countryCodePredicate = d-> (criteria.getCountryCode()!=null ) && (criteria.getCountryCode().equals(d.getCountryCode()));
-        Predicate<RemoteCallBankDto> namePredicate = d-> (criteria.getName()!=null) && (criteria.getName().equals(d.getName()));
+        Predicate<FinalBankDto> idPredicate = d-> (criteria.getId()!=null) && (criteria.getId().equals(d.getId()));
+        Predicate<FinalBankDto> authPredicate = d-> (criteria.getAuth()!=null) && (criteria.getAuth().equals(d.getAuth()));
+        Predicate<FinalBankDto> countryCodePredicate = d-> (criteria.getCountryCode()!=null ) && (criteria.getCountryCode().equals(d.getCountryCode()));
+        Predicate<FinalBankDto> namePredicate = d-> (criteria.getName()!=null) && (criteria.getName().equals(d.getName()));
         return allBanks.stream().filter(idPredicate.or(namePredicate).or(countryCodePredicate).or(authPredicate)).collect(Collectors.toList());
     }
 
-    public  List<RemoteCallBankDto> getPaginated(List<RemoteCallBankDto> allBanks, int page, int pageSize) {
+    public  List<FinalBankDto> getPaginated(List<FinalBankDto> allBanks, int page, int pageSize) {
         if(pageSize <= 0 || page <= 0) {
             throw new IllegalArgumentException("invalid page size: " + pageSize);
         }
