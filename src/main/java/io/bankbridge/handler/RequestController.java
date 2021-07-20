@@ -30,9 +30,10 @@ public class RequestController {
 
     public String handle(Request request, Response response) {
         SearchParams criteria = new Gson().fromJson(request.body(), SearchParams.class);
-        int page = Integer.parseInt(request.params(":page"));
-        int pageSize = Integer.parseInt(request.params(":pageSize"));
-        try {
+        //I am setting by default page size as 5 and page as 1, even if it is all banks
+        int page = request.params(":page")!=null?Integer.parseInt(request.params(":page")):1;
+        int pageSize = request.params(":pageSize")!=null?Integer.parseInt(request.params(":pageSize")):5;
+         try {
             List<FinalBankDto> allBanks = new ArrayList<>();
             //Comment "i" is just to Keep track when doing Pagination
             int i=0;
@@ -58,37 +59,35 @@ public class RequestController {
 
     }
 
+
+    //Adds Criteria and Pagination
     private String getResultBanks(SearchParams criteria, int page, int pageSize, List<FinalBankDto> allBanks) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        /*SimpleModule module = new SimpleModule();
-        module.addSerializer(JsonView.class, new JsonViewSerializer());
-        mapper.registerModule(module);*/
-
         if (criteria != null) {
-            List<FinalBankDto> getPaginatedResult = getFilteredBanks(allBanks, criteria);
-            List<FinalBankDto> result =getPaginated(getPaginatedResult, page, pageSize);
+            List<FinalBankDto> result = getPaginated(getFilteredBanks(allBanks, criteria), page, pageSize);
+            //TODO: Remove Finally after testing all scenarios
             for (FinalBankDto x : result) {
                 System.out.println("Lists : " + x.getId());
             }
-            if(this.resourceProvider.getClass() != BanksCacheBased.class)
-            return  mapper.writerWithView(View.ExtendedPublic.class).writeValueAsString(result);
-            else{
-                return  mapper.writerWithView(View.Internal.class).writeValueAsString(result);
-            }
-            //return objectMapper.writerWithView(BanksCacheBased.class).writeValueAsString(result);
+            return getFinalJsonBasedOnObjectCalls(mapper, result);
         } else {
             List<FinalBankDto> result = getPaginated(allBanks, page, pageSize);
             for (FinalBankDto x : result) {
                 System.out.println("Lists in else:: " + x.getId());
             }
-            if(this.resourceProvider.getClass() != BanksCacheBased.class)
-                return  mapper.writerWithView(View.ExtendedPublic.class).writeValueAsString(result);
-            else{
-                return  mapper.writerWithView(View.Internal.class).writeValueAsString(result);
-            }
+            return getFinalJsonBasedOnObjectCalls(mapper, result);
+        }
+    }
+    //Get the final Sting based on from where it is called
+    public String getFinalJsonBasedOnObjectCalls(ObjectMapper mapper, List<FinalBankDto> result) throws JsonProcessingException {
+        if (this.resourceProvider.getClass() != BanksCacheBased.class)
+            return mapper.writerWithView(View.ExtendedPublic.class).writeValueAsString(result);
+        else {
+            return mapper.writerWithView(View.Internal.class).writeValueAsString(result);
         }
     }
 
+    //Filtering based on Search Params
     public List<FinalBankDto> getFilteredBanks(List<FinalBankDto> allBanks, SearchParams criteria) {
 
         Predicate<FinalBankDto> idPredicate = d-> (criteria.getId()!=null) && (criteria.getId().equals(d.getId()));
@@ -104,7 +103,6 @@ public class RequestController {
         }
 
         int fromIndex = (page - 1) * pageSize;
-        System.out.println("Here:::::"+ fromIndex);
         if(allBanks == null || allBanks.size() < fromIndex){
             return Collections.emptyList();
         }
